@@ -1,0 +1,2 @@
+# eighty-squared
+I wanted to play around with compilers and microprocessors, but didn't have any and didn't feel like getting one and setting it up physically. So I made this simulator for the Intel 8080 instead. The simulator is based on [this manual](https://altairclone.com/downloads/manuals/8080%20Programmers%20Manual.pdf) and supports everything the chip offers. I also went and included a simple debugger.
