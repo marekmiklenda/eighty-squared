@@ -4,6 +4,9 @@ use eighty_squared::{
     instruction::Instruction, io::StreamIo, processor::Processor, EightySquaredResult,
 };
 
+// This example loads the processor's memory with the file at env/program.bin; the program is a simple sorting algorithm
+// The processor reads the incoming unsorted numbers on port 0 when interrupt RST(0) occurs, simulating signalling that a value is available.
+// After the last value is loaded (terminated by 0xFF), the processor sorts the values and outputs them also on port 0, where they get written to env/output.bin
 async fn main_wrapped() -> EightySquaredResult<()> {
     let mut stdin = BufReader::new(File::open("env/input.bin")?);
     let stdout = File::create("env/output.bin")?;

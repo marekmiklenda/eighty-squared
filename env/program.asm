@@ -1,6 +1,6 @@
 ; A simple select sorting program
 ; This is by no means optimal (it's quite ugly in fact) and was made rather quickly to test the simulator. Input numbers are read from
-; device dev_input (0x00) when interrupt 0 occurs, terminated by 0xFF.
+; device dev_input (0x00) when interrupt RST(0) occurs, terminated by 0xFF.
 ; Assembler used: https://enginedesigns.net/download/retroassembler.html
 
 .target "8080"
@@ -60,8 +60,7 @@ after_cmp:  INX     H               ; Increment HL
             INR     C               ; Increment index C
             JMP     sort_loop       ; Go back to sort_loop
 
-after_iter: ;OUT     dev_stop
-            DCR     B               ; Decrement the length of the unsorted array
+after_iter: DCR     B               ; Decrement the length of the unsorted array
             LHLD    cur_start       ; Load the address of (old) current start to HL
             
                                     ; *DE = *HL
