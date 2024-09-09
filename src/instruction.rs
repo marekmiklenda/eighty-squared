@@ -994,11 +994,11 @@ impl Instruction {
                 hardware.registers.pc.set(hardware.registers.pairs.hl.get());
             }
             Self::PUSH(a) => {
-                push(hardware, hardware.registers[a].get());
+                push(hardware, hardware.registers[a.as_stack_op()].get());
             }
             Self::POP(a) => {
                 let v = pop(hardware);
-                hardware.registers[a].set(v);
+                hardware.registers[a.as_stack_op()].set(v);
             }
             Self::XTHL => {
                 let sp = hardware.registers.sp.get();

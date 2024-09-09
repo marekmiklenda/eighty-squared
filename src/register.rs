@@ -207,6 +207,16 @@ pub enum ExtendedRegisterAddressing {
     DE = 1,
     HL = 2,
     SP = 3,
+    PSW,
+}
+
+impl ExtendedRegisterAddressing {
+    pub fn as_stack_op(self) -> Self {
+        match self {
+            Self::SP => Self::PSW,
+            v => v,
+        }
+    }
 }
 
 impl TryFrom<u8> for ExtendedRegisterAddressing {
@@ -260,14 +270,16 @@ pub struct RegisterPairs {
     pub bc: RegisterU16,
     pub de: RegisterU16,
     pub hl: RegisterU16,
+    pub psw: RegisterU16,
 }
 
-impl From<GeneralPurposeRegisters> for RegisterPairs {
-    fn from(value: GeneralPurposeRegisters) -> Self {
+impl RegisterPairs {
+    pub fn new(general: GeneralPurposeRegisters, a: RegisterU8, flags: FlagRegister) -> Self {
         Self {
-            bc: RegisterU16::new_pair(value.c, value.b),
-            de: RegisterU16::new_pair(value.e, value.d),
-            hl: RegisterU16::new_pair(value.l, value.h),
+            bc: RegisterU16::new_pair(general.c, general.b),
+            de: RegisterU16::new_pair(general.e, general.d),
+            hl: RegisterU16::new_pair(general.l, general.h),
+            psw: RegisterU16::new_pair(a, flags.0),
         }
     }
 }
@@ -299,14 +311,17 @@ pub struct Registers {
 
 impl Default for Registers {
     fn default() -> Self {
+        let a = RegisterU8::default();
+        let flags = FlagRegister::default();
+
         let general_purpose = GeneralPurposeRegisters::default();
-        let pairs = RegisterPairs::from(general_purpose.clone());
+        let pairs = RegisterPairs::new(general_purpose.clone(), a.clone(), flags.clone());
 
         Self {
-            a: RegisterU8::default(),
+            a,
             pc: RegisterU16::new_single(),
             sp: RegisterU16::new_single(),
-            flags: FlagRegister::default(),
+            flags,
             general_purpose,
             pairs,
         }
@@ -350,6 +365,7 @@ impl std::ops::Index<ExtendedRegisterAddressing> for Registers {
             ExtendedRegisterAddressing::DE => &self.pairs.de,
             ExtendedRegisterAddressing::HL => &self.pairs.hl,
             ExtendedRegisterAddressing::SP => &self.sp,
+            ExtendedRegisterAddressing::PSW => &self.pairs.psw,
         }
     }
 }
@@ -361,6 +377,7 @@ impl std::ops::IndexMut<ExtendedRegisterAddressing> for Registers {
             ExtendedRegisterAddressing::DE => &mut self.pairs.de,
             ExtendedRegisterAddressing::HL => &mut self.pairs.hl,
             ExtendedRegisterAddressing::SP => &mut self.sp,
+            ExtendedRegisterAddressing::PSW => &mut self.pairs.psw,
         }
     }
 }
